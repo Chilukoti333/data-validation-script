@@ -1,29 +1,33 @@
-ocr_text = """
-Name: Ravi Kumar
-Date of Birth: 1998-04-12
-""".strip()
+import json
 
-json_data = {
-    "name": "Ravi Kumar",
-    "dob": "1998-04-12"
-}
+def validate_data(ocr_text, json_data):
+    try:
+        expected_data = json.loads(json_data)
+        if not all(key in expected_data for key in ["name", "dob"]):
+            print("Mismatch Found")
+            return
 
-def extract_ocr_data(ocr_text):
-    lines = ocr_text.split("\n")
-    name = lines[0].split(":", 1)[1].strip()
-    dob = lines[1].split(":", 1)[1].strip()
-    return {"name": name, "dob": dob}
+        ocr_parts = ocr_text.strip().split()
+        if len(ocr_parts) < 2:
+            print("Mismatch Found")
+            return
 
-def verify_document(ocr_text, json_data):
-    extracted_data = extract_ocr_data(ocr_text)
-    print("Extracted OCR Data:", extracted_data)
-    print("Expected JSON Data:", json_data)
-    if extracted_data == json_data:
-        print("Document Verified")
-    else:
+        ocr_name = " ".join(ocr_parts[:-1])
+        ocr_dob = ocr_parts[-1]
+
+        if (expected_data["name"].lower().strip() == ocr_name.lower().strip() and
+            expected_data["dob"].strip() == ocr_dob.strip()):
+            print("Document Verified")
+        else:
+            print("Mismatch Found")
+
+    except Exception:
         print("Mismatch Found")
 
-if __name__ == "__main__":
-    verify_document(ocr_text, json_data)
+ocr_text = input().strip()
+json_data = input().strip()
+
+validate_data(ocr_text, json_data)
+
 
 
